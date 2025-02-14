@@ -34,9 +34,14 @@ jobs:
           aws cloudformation validate-template \
             --template-body file://./cloudfront.yml
 
-      - name: Deploy Cloudfront Stack
+      - name: Deploy CloudFormation Stack
         run: |
           aws cloudformation deploy \
             --stack-name "cloudfront" \
             --template-file "./cloudfront.yml" \
             --capabilities CAPABILITY_NAMED_IAM
+
+      - name: Describe CF Events
+        run: |
+          aws cloudformation describe-stack-events \
+            --stack-name "cloudfront"
