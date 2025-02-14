@@ -25,6 +25,9 @@ jobs:
           role-session-name: GitHub_to_AWS_via_FederatedOIDC
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Sts GetCallerIdentity
+      - name: Deploy Cloudfront Stack
         run: |
-          aws sts get-caller-identity
+          aws cloudformation deploy \
+            --stack-name "cloudfront" \
+            --template-file "cloudfront.yml" \
+            --capabilities CAPABILITY_NAMED_IAM
