@@ -5,7 +5,7 @@ Resources:
   MyS3Bucket:
     Type: "AWS::S3::Bucket"
     Properties:
-      BucketName: !Sub "my-unique-bucket"
+      BucketName: !Sub "my-unique-bucket-name-${AWS::AccountId}"
       AccessControl: Private
       VersioningConfiguration:
         Status: Enabled
