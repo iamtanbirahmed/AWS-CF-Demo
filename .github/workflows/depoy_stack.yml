@@ -29,5 +29,5 @@ jobs:
         run: |
           aws cloudformation deploy \
             --stack-name "cloudfront" \
-            --template-file "cloudfront.yml" \
+            --template-file "./cloudfront.yml" \
             --capabilities CAPABILITY_NAMED_IAM
