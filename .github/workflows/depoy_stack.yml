@@ -4,13 +4,27 @@ on:
   push:
     branches:
       - master
+env:
+  AWS_REGION: "us-east-1"
+
+permissions:
+  id-token: write
+  contents: read
 
 jobs:
-  build-and-test:
+  AssumeRoleAndCallIdentity:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
       - name: Confogure AWS credentials
-        run: echo `Setting AWS credentials`
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_ROLE_NAME }}
+          role-session-name: GitHub_to_AWS_via_FederatedOIDC
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Sts GetCallerIdentity
+        run: |
+          aws sts get-caller-identity
