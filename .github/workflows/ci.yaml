@@ -1,0 +1,46 @@
+name: Update Patch Version and Create Release
+
+on:
+  push:
+    branches:
+      - releases/v[0-9]+\.[0-9]+
+
+jobs:
+  update-patch-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Get latest tag
+        run: |
+          LATEST_TAG=$(git describe --tags --abbrev=0)
+          echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
+
+      - name: Extract minor version from release branch
+        run: |
+          RELEASE_BRANCH=$(echo "${GITHUB_REF}" | cut -d'/' -f3-)
+          MINOR_VERSION=$(echo "$RELEASE_BRANCH" | cut -d'-' -f2)
+          echo "MINOR_VERSION=$MINOR_VERSION" >> $GITHUB_ENV
+
+      - name: Calculate new patch version
+        run: |
+          PATCH_VERSION=$(echo "$LATEST_TAG" | cut -d'.' -f3)
+          NEW_PATCH_VERSION=$((PATCH_VERSION + 1))
+          echo "NEW_PATCH_VERSION=$NEW_PATCH_VERSION" >> $GITHUB_ENV
+
+      - name: Create new tag
+        run: |
+          NEW_TAG="v${MINOR_VERSION}.${NEW_PATCH_VERSION}"
+          git tag -a "$NEW_TAG" -m "Automated patch version update"
+          echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
+
+  #   - name: Create release
+  #     run: |
+  #       git checkout -b "release/${MINOR_VERSION}"
+  #       git merge "main"
+  #       git push origin "release/${MINOR_VERSION}"
+  #       gh release create "$NEW_TAG" --generate-notes --title "Release $NEW_TAG"
+  #       echo "RELEASE_CREATED=true" >> $GITHUB_ENV
